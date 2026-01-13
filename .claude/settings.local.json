@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose exec:*)",
+      "Bash(docker compose:*)",
+      "Bash(curl:*)",
+      "Bash(ADMIN_TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ3MGFkN2NjLTI0MTktNGQ1Mi1iNjRlLWU5ODlhODMzZTI3OCIsImVtYWlsIjoiYWRtaW5AY21zLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2ODIyMzQ4MSwiZXhwIjoxNzY4ODI4MjgxfQ.vc9MO9C2W3mhJ0U8QxkLudQDbi0xT44sP21ZvQRNPuk\")",
+      "Bash(EDITOR_TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAzMmNhYmIxLTEwMjUtNGVlNi1hMjhkLTIwY2YwN2U2MmEwNyIsImVtYWlsIjoiZWRpdG9yQGNtcy5jb20iLCJyb2xlIjoiZWRpdG9yIiwiaWF0IjoxNzY4MjIzNTM5LCJleHAiOjE3Njg4MjgzMzl9.6gte8aeVjCrHjgcfZ7xWcrc_FzYvXZL3LirmgSWaQAM\":*)",
+      "Bash(__NEW_LINE_d31e3be67e51644b__ echo \"=== Test 1: Editor trying to access admin-only endpoint \\(should fail with 403\\) ===\")",
+      "Bash(__NEW_LINE_79c458e1faf59ea3__ echo -e \"\\\\n=== Test 3: Get all topics \\(authenticated\\) ===\")",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npm run setup:*)",
+      "Bash(npm run seed:*)"
+    ]
+  }
+}

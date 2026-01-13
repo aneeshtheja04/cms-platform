@@ -1,0 +1,20 @@
+{
+  "name": "cms-platform",
+  "version": "1.0.0",
+  "description": "CMS Platform - Admin CMS + Public Catalog API + Scheduled Publishing",
+  "scripts": {
+    "dev": "docker compose up --build -d && sleep 5 && npm run setup && echo '\n✅ Services ready!' && docker compose logs -f",
+    "dev:fresh": "docker compose down -v && docker compose up --build -d && sleep 8 && npm run migrate && npm run seed && echo '\n✅ Fresh start complete!' && docker compose logs -f",
+    "setup": "npm run migrate && npm run seed",
+    "start": "docker compose up -d && docker compose logs -f",
+    "stop": "docker compose down",
+    "restart": "docker compose restart",
+    "logs": "docker compose logs -f",
+    "migrate": "docker compose exec api node run-migrations.js",
+    "seed": "docker compose exec api node run-seed.js",
+    "db:reset": "docker compose down -v && docker compose up -d db && sleep 5 && npm run migrate && npm run seed"
+  },
+  "keywords": ["cms", "education", "content-management"],
+  "author": "",
+  "license": "ISC"
+}
