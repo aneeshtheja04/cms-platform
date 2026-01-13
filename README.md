@@ -61,16 +61,6 @@ This will:
 - **API Health Check**: http://localhost:3000/health
 - **Database**: localhost:5432
 
-## Default Login Credentials
-
-After seeding the database, use these credentials to log in:
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@cms.com | admin123 |
-| Editor | editor@cms.com | editor123 |
-| Viewer | viewer@cms.com | viewer123 |
-
 ## Project Structure
 
 ```
