@@ -49,9 +49,12 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Welcome back, {user?.name}!
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Welcome back, {user?.name}!
+        </h1>
+        <p className="text-gray-600 mt-1">Here's what's happening with your content today.</p>
+      </div>
 
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-md">
@@ -66,21 +69,21 @@ export default function Dashboard() {
             <StatCard
               label="Programs"
               value={stats.programs}
-              color="blue"
+              color="green"
               icon={<Layers className="w-6 h-6" />}
             />
 
             <StatCard
               label="Lessons"
               value={stats.lessons}
-              color="green"
+              color="blue"
               icon={<BookOpen className="w-6 h-6" />}
             />
 
             <StatCard
               label="Users"
               value={stats.users}
-              color="purple"
+              color="orange"
               icon={<Users className="w-6 h-6" />}
             />
           </>

@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { Eye, EyeOff } from 'lucide-react';
+import logo from '../../assets/cms-logo.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -31,17 +32,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-white to-pink-50 px-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">CMS Platform</h1>
-          <p className="text-gray-600">Sign in to your account</p>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <img src={logo} alt="CMS Logo" className="w-14 h-14 object-contain" />
+            <h1 className="text-3xl font-bold text-gray-900">ZenCMS</h1>
+          </div>
+          <p className="mt-1 text-gray-600">Sign in to manage your content</p>
         </div>
 
-        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-          <form onSubmit={handleSubmit}>
+        {/* Card */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <Input
-              label="Email"
+              label="Email address"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -60,7 +66,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                  className="text-gray-400 hover:text-indigo-600 transition focus:outline-none"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -72,26 +78,38 @@ export default function Login() {
             />
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
-            <Button type="submit" disabled={loading} className="w-full">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2.5 text-base font-semibold transition"
+            >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-md">
-            <p className="text-xs text-gray-600 mb-2">Test Credentials:</p>
-            <p className="text-xs text-gray-700">
+          {/* Test Credentials */}
+          <div className="rounded-lg bg-gray-50 p-4 text-xs text-gray-700">
+            <p className="mb-2 font-semibold text-gray-600">
+              Test Credentials
+            </p>
+            <p>
               <strong>Admin:</strong> admin@cms.com / admin123
             </p>
-            <p className="text-xs text-gray-700">
+            <p>
               <strong>Editor:</strong> editor@cms.com / editor123
             </p>
           </div>
         </div>
+
+        {/* Footer */}
+        <p className="mt-6 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} ZenCMS. All rights reserved.
+        </p>
       </div>
     </div>
   );

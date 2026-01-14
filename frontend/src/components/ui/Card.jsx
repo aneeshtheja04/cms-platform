@@ -15,7 +15,7 @@ export default function Card({ children, className = '', title, actions }) {
 export function StatCard({ label, value, icon, color = 'blue' }) {
   const colors = {
     blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
+    green: 'bg-teal-50 text-teal-600',
     purple: 'bg-purple-50 text-purple-600',
     orange: 'bg-orange-50 text-orange-600',
   };
