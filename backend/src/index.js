@@ -20,7 +20,13 @@ const port = process.env.PORT || 3000;
 // ============ MIDDLEWARE ============
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173', // Local development
+    'https://frontend-production-c995.up.railway.app' // Production frontend
+  ],
+  credentials: true
+}));
 
 // Parse JSON bodies
 app.use(express.json());
