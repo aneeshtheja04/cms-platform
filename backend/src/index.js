@@ -23,6 +23,7 @@ const port = process.env.PORT || 3000;
 app.use(cors({
   origin: [
     'http://localhost:5173', // Local development
+    'http://localhost:5174', // Local development (alternate port)
     'https://frontend-production-c995.up.railway.app' // Production frontend
   ],
   credentials: true
