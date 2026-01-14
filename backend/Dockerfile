@@ -14,5 +14,8 @@ RUN npm install
 # Copy application files
 COPY . .
 
-# Run migrations and seed on container start
-CMD ["sh", "-c", "node run-migrations.js && node run-seed.js && npm start"]
+# Expose port
+EXPOSE 3000
+
+# Run migrations, seed, and start server
+CMD ["sh", "-c", "node run-migrations.js && node run-seed.js && node src/index.js"]

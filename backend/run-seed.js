@@ -1,4 +1,8 @@
-require('dotenv').config({ path: '../.env' });
+// In production (Railway/Docker), environment variables are already set
+// In development, load from parent .env file
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: '../.env' });
+}
 const { Client } = require('pg');
 const bcrypt = require('bcrypt');
 
