@@ -10,6 +10,11 @@ export default defineConfig({
   },
   preview: {
     port: 5173,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    strictPort: true,
+    allowedHosts: [
+      'frontend-production-c995.up.railway.app',
+      '.railway.app'
+    ]
   }
 })
