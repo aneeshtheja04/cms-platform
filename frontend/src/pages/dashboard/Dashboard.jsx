@@ -1,14 +1,51 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import Card from '../../components/ui/Card';
+import Card, { StatCard } from '../../components/ui/Card';
+import Loader from '../../components/ui/Loader';
+import { statsApi } from '../../api/stats.api';
+import { BookOpen, Layers, Users } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const stats = [
-    { label: 'Programs', value: '12', color: 'bg-blue-500' },
-    { label: 'Lessons', value: '84', color: 'bg-green-500' },
-    { label: 'Users', value: '3', color: 'bg-purple-500' },
-  ];
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const data = await statsApi.getStats();
+      setStats({
+        programs: data.programsCount,
+        lessons: data.lessonsCount,
+        users: data.usersCount,
+      });
+    } catch (err) {
+      setError('Failed to load statistics');
+      console.error('Error fetching stats:', err);
+      // Set default values on error
+      setStats({
+        programs: 0,
+        lessons: 0,
+        users: 0,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -16,21 +53,38 @@ export default function Dashboard() {
         Welcome back, {user?.name}!
       </h1>
 
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-md">
+          {error}
+        </div>
+      )}
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {stats.map((stat) => (
-          <Card key={stat.label} className="p-6">
-            <div className="flex items-center">
-              <div className={`${stat.color} w-12 h-12 rounded-lg flex items-center justify-center text-white text-2xl font-bold mr-4`}>
-                {stat.value}
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{stat.label}</p>
-                <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-              </div>
-            </div>
-          </Card>
-        ))}
+        {stats && (
+          <>
+            <StatCard
+              label="Programs"
+              value={stats.programs}
+              color="blue"
+              icon={<Layers className="w-6 h-6" />}
+            />
+
+            <StatCard
+              label="Lessons"
+              value={stats.lessons}
+              color="green"
+              icon={<BookOpen className="w-6 h-6" />}
+            />
+
+            <StatCard
+              label="Users"
+              value={stats.users}
+              color="purple"
+              icon={<Users className="w-6 h-6" />}
+            />
+          </>
+        )}
       </div>
 
       {/* Recent Activity */}

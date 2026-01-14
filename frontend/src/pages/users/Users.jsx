@@ -57,9 +57,12 @@ export default function Users() {
       viewer: 'bg-gray-100 text-gray-700',
     };
 
+    // Capitalize first letter
+    const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+
     return (
       <span className={`px-3 py-1 rounded-full text-sm font-medium ${styles[role] || styles.viewer}`}>
-        {role}
+        {capitalizedRole}
       </span>
     );
   };

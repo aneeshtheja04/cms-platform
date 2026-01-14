@@ -10,18 +10,27 @@ async function getAllTerms(filters = {}) {
 
   let query = `
     SELECT t.id, t.program_id, t.term_number, t.title, t.created_at,
-           p.title as program_title
+           p.title as program_title,
+           COUNT(l.id)::integer as lesson_count,
+           COUNT(CASE WHEN l.status = 'published' THEN 1 END)::integer as published_lesson_count
     FROM terms t
     INNER JOIN programs p ON p.id = t.program_id
+    LEFT JOIN lessons l ON l.term_id = t.id
   `;
 
   const params = [];
+  const conditions = [];
 
   if (program_id) {
-    query += ` WHERE t.program_id = $1`;
+    conditions.push(`t.program_id = $1`);
     params.push(program_id);
   }
 
+  if (conditions.length > 0) {
+    query += ` WHERE ${conditions.join(' AND ')}`;
+  }
+
+  query += ` GROUP BY t.id, t.program_id, t.term_number, t.title, t.created_at, p.title`;
   query += ` ORDER BY t.program_id, t.term_number`;
 
   const result = await pool.query(query, params);

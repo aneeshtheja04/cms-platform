@@ -47,7 +47,33 @@ async function getAllPrograms(filters = {}) {
   params.push(limit, offset);
 
   const result = await pool.query(query, params);
-  return result.rows;
+  const programs = result.rows;
+
+  // Fetch topics and assets for each program
+  for (const program of programs) {
+    // Get topics
+    const topicsResult = await pool.query(
+      `SELECT t.id, t.name
+       FROM topics t
+       INNER JOIN program_topics pt ON pt.topic_id = t.id
+       WHERE pt.program_id = $1
+       ORDER BY t.name`,
+      [program.id]
+    );
+    program.topics = topicsResult.rows;
+
+    // Get assets
+    const assetsResult = await pool.query(
+      `SELECT id, language, variant, asset_type, url, created_at
+       FROM program_assets
+       WHERE program_id = $1
+       ORDER BY language, variant`,
+      [program.id]
+    );
+    program.assets = assetsResult.rows;
+  }
+
+  return programs;
 }
 
 /**

@@ -27,6 +27,10 @@ export default function ContentManager({ program }) {
     const [savingLesson, setSavingLesson] = useState(false);
     const [lessonModalTab, setLessonModalTab] = useState('settings'); // settings, thumbnails
 
+    // Edit Term State
+    const [editingTerm, setEditingTerm] = useState(null);
+    const [termFormData, setTermFormData] = useState({ title: '' });
+
     // Schedule Modal State
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const [schedulingLessonId, setSchedulingLessonId] = useState(null);
@@ -54,8 +58,8 @@ export default function ContentManager({ program }) {
         }
     };
 
-    const fetchLessons = async (termId) => {
-        if (termLessons[termId]) return; // Already fetched
+    const fetchLessons = async (termId, force = false) => {
+        if (!force && termLessons[termId]) return; // Already fetched, skip unless forced
 
         try {
             setLessonsLoading((prev) => ({ ...prev, [termId]: true }));
@@ -100,6 +104,28 @@ export default function ContentManager({ program }) {
             fetchTerms();
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to create term');
+        } finally {
+            setCreatingTerm(false);
+        }
+    };
+
+    const handleEditTerm = (term) => {
+        setEditingTerm(term);
+        setTermFormData({ title: term.title || '' });
+    };
+
+    const handleUpdateTerm = async (e) => {
+        e.preventDefault();
+
+        try {
+            setCreatingTerm(true);
+            await termsApi.update(editingTerm.id, termFormData);
+            setEditingTerm(null);
+            setTermFormData({ title: '' });
+            fetchTerms(); // Refresh term list
+            alert('Term updated successfully');
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to update term');
         } finally {
             setCreatingTerm(false);
         }
@@ -156,14 +182,21 @@ export default function ContentManager({ program }) {
                 }
             }
             setIsLessonModalOpen(false);
-            fetchTerms(); // Refresh term counts
 
-            // If we just created a lesson, maybe we want to stay open or switch to thumbnails?
-            // For now, let's close it to be simple, or we could ask the user.
-            // But if we are editing, we might be in the settings tab.
+            // Clear lesson cache for this term
+            setTermLessons(prev => {
+                const updated = { ...prev };
+                delete updated[selectedTermId];
+                return updated;
+            });
 
-            // If it was a create, we don't have the ID to support thumbnail management immediately without a refetch/state update.
-            // So closing is safer.
+            // Refresh term counts
+            await fetchTerms();
+
+            // Refetch lessons if term is expanded
+            if (expandedTerms[selectedTermId]) {
+                await fetchLessons(selectedTermId, true);
+            }
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to save lesson');
         } finally {
@@ -178,7 +211,18 @@ export default function ContentManager({ program }) {
             if (action === 'publish') await lessonsApi.publish(lessonId);
             if (action === 'archive') await lessonsApi.archive(lessonId);
 
-            fetchLessons(termId);
+            // Clear lesson cache for this term
+            setTermLessons(prev => {
+                const updated = { ...prev };
+                delete updated[termId];
+                return updated;
+            });
+
+            // Refresh term counts
+            await fetchTerms();
+
+            // Refetch lessons with force
+            await fetchLessons(termId, true);
         } catch (err) {
             alert(`Failed to ${action} lesson`);
         } finally {
@@ -210,7 +254,19 @@ export default function ContentManager({ program }) {
             await lessonsApi.schedule(schedulingLessonId, { publish_at: publishAt });
             alert('Lesson scheduled successfully!');
             setIsScheduleModalOpen(false);
-            fetchLessons(schedulingTermId);
+
+            // Clear lesson cache for this term
+            setTermLessons(prev => {
+                const updated = { ...prev };
+                delete updated[schedulingTermId];
+                return updated;
+            });
+
+            // Refresh term counts
+            await fetchTerms();
+
+            // Refetch lessons with force
+            await fetchLessons(schedulingTermId, true);
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to schedule lesson');
         } finally {
@@ -253,7 +309,10 @@ export default function ContentManager({ program }) {
                                     <Button
                                         variant="secondary"
                                         className="text-xs py-1 h-auto"
-                                        onClick={(e) => { e.stopPropagation(); /* Edit term logic */ }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditTerm(term);
+                                        }}
                                     >
                                         Edit Term
                                     </Button>
@@ -466,6 +525,44 @@ export default function ContentManager({ program }) {
                     </div>
                 </form>
             </Modal>
+
+            {/* Edit Term Modal */}
+            {editingTerm && (
+                <Modal
+                    isOpen={!!editingTerm}
+                    onClose={() => {
+                        setEditingTerm(null);
+                        setTermFormData({ title: '' });
+                    }}
+                    title="Edit Term"
+                    size="sm"
+                >
+                    <form onSubmit={handleUpdateTerm} className="space-y-4">
+                        <Input
+                            label="Term Title (Optional)"
+                            value={termFormData.title}
+                            onChange={(e) => setTermFormData({ ...termFormData, title: e.target.value })}
+                            placeholder="e.g., Advanced Concepts"
+                        />
+                        <div className="flex justify-end gap-2 mt-6">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={() => {
+                                    setEditingTerm(null);
+                                    setTermFormData({ title: '' });
+                                }}
+                                disabled={creatingTerm}
+                            >
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={creatingTerm}>
+                                {creatingTerm ? 'Updating...' : 'Update Term'}
+                            </Button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
         </div>
     );
 }

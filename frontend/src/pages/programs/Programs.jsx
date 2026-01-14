@@ -100,9 +100,12 @@ export default function Programs() {
       archived: 'bg-red-100 text-red-700',
     };
 
+    // Capitalize first letter
+    const capitalizedStatus = status.charAt(0).toUpperCase() + status.slice(1);
+
     return (
       <span className={`px-3 py-1 rounded-full text-sm font-medium ${styles[status] || styles.draft}`}>
-        {status}
+        {capitalizedStatus}
       </span>
     );
   };

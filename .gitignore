@@ -31,7 +31,7 @@ build/
 *.tsbuildinfo
 
 # Claude AI context (optional - uncomment to exclude)
-# .claude/
+.claude/
 
 # Database data (for local Docker volumes)
 postgres-data/
