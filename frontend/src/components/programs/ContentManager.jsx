@@ -7,8 +7,11 @@ import Modal from '../ui/Modal';
 import Input from '../ui/Input';
 import LessonForm from './LessonForm';
 import LessonAssetsManager from './LessonAssetsManager';
+import { useAuth } from '../../context/AuthContext';
 
 export default function ContentManager({ program }) {
+    const { hasRole } = useAuth();
+    const canEdit = hasRole(['admin', 'editor']);
     const [terms, setTerms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [creatingTerm, setCreatingTerm] = useState(false);
@@ -280,14 +283,18 @@ export default function ContentManager({ program }) {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium text-gray-900">Program Content</h3>
-                <Button onClick={() => setIsTermModalOpen(true)}>+ Add Term</Button>
+                {canEdit && (
+                    <Button onClick={() => setIsTermModalOpen(true)}>+ Add Term</Button>
+                )}
             </div>
 
             <div className="space-y-4">
                 {terms.length === 0 ? (
                     <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
                         <p className="text-gray-500 mb-2">No terms yet</p>
-                        <Button variant="outline" onClick={() => setIsTermModalOpen(true)}>Create First Term</Button>
+                        {canEdit && (
+                            <Button variant="outline" onClick={() => setIsTermModalOpen(true)}>Create First Term</Button>
+                        )}
                     </div>
                 ) : (
                     terms.map((term) => (
@@ -305,31 +312,35 @@ export default function ContentManager({ program }) {
                                         {term.lesson_count || 0} lessons
                                     </span>
                                 </div>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="secondary"
-                                        className="text-xs py-1 h-auto"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleEditTerm(term);
-                                        }}
-                                    >
-                                        Edit Term
-                                    </Button>
-                                </div>
+                                {canEdit && (
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="secondary"
+                                            className="text-xs py-1 h-auto"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditTerm(term);
+                                            }}
+                                        >
+                                            Edit Term
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
 
                             {expandedTerms[term.id] && (
                                 <div className="p-4 bg-white border-t border-gray-200">
                                     <div className="flex justify-between items-center mb-3">
                                         <h4 className="text-sm font-medium text-gray-700">Lessons</h4>
-                                        <Button
-                                            variant="outline"
-                                            className="text-xs py-1 h-auto"
-                                            onClick={() => openAddLesson(term.id)}
-                                        >
-                                            + Add Lesson
-                                        </Button>
+                                        {canEdit && (
+                                            <Button
+                                                variant="outline"
+                                                className="text-xs py-1 h-auto"
+                                                onClick={() => openAddLesson(term.id)}
+                                            >
+                                                + Add Lesson
+                                            </Button>
+                                        )}
                                     </div>
 
                                     {lessonsLoading[term.id] ? (
@@ -357,38 +368,40 @@ export default function ContentManager({ program }) {
                                                             </span>
                                                         </td>
                                                         <td className="py-2 pr-2 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <button
-                                                                    onClick={() => openEditLesson(lesson)}
-                                                                    className="text-blue-600 hover:text-blue-800 text-xs"
-                                                                >
-                                                                    Edit
-                                                                </button>
-                                                                {(lesson.status === 'draft' || lesson.status === 'scheduled') && (
+                                                            {canEdit && (
+                                                                <div className="flex justify-end gap-2">
                                                                     <button
-                                                                        onClick={() => handleLessonAction(lesson.id, 'publish', term.id)}
-                                                                        className="text-green-600 hover:text-green-800 text-xs"
+                                                                        onClick={() => openEditLesson(lesson)}
+                                                                        className="text-blue-600 hover:text-blue-800 text-xs"
                                                                     >
-                                                                        Publish
+                                                                        Edit
                                                                     </button>
-                                                                )}
-                                                                {(lesson.status === 'draft' || lesson.status === 'scheduled') && (
-                                                                    <button
-                                                                        onClick={() => openScheduleModal(lesson.id, term.id)}
-                                                                        className="text-yellow-600 hover:text-yellow-800 text-xs"
-                                                                    >
-                                                                        Schedule
-                                                                    </button>
-                                                                )}
-                                                                {lesson.status !== 'archived' && (
-                                                                    <button
-                                                                        onClick={() => handleLessonAction(lesson.id, 'archive', term.id)}
-                                                                        className="text-red-600 hover:text-red-800 text-xs"
-                                                                    >
-                                                                        Archive
-                                                                    </button>
-                                                                )}
-                                                            </div>
+                                                                    {(lesson.status === 'draft' || lesson.status === 'scheduled') && (
+                                                                        <button
+                                                                            onClick={() => handleLessonAction(lesson.id, 'publish', term.id)}
+                                                                            className="text-green-600 hover:text-green-800 text-xs"
+                                                                        >
+                                                                            Publish
+                                                                        </button>
+                                                                    )}
+                                                                    {(lesson.status === 'draft' || lesson.status === 'scheduled') && (
+                                                                        <button
+                                                                            onClick={() => openScheduleModal(lesson.id, term.id)}
+                                                                            className="text-yellow-600 hover:text-yellow-800 text-xs"
+                                                                        >
+                                                                            Schedule
+                                                                        </button>
+                                                                    )}
+                                                                    {lesson.status !== 'archived' && (
+                                                                        <button
+                                                                            onClick={() => handleLessonAction(lesson.id, 'archive', term.id)}
+                                                                            className="text-red-600 hover:text-red-800 text-xs"
+                                                                        >
+                                                                            Archive
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                         </td>
                                                     </tr>
                                                 ))}

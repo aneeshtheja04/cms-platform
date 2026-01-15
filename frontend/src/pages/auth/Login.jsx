@@ -47,7 +47,7 @@ export default function Login() {
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <Input
-              label="Email address"
+              label="Enter email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -56,7 +56,7 @@ export default function Login() {
             />
 
             <Input
-              label="Password"
+              label="Enter password"
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}

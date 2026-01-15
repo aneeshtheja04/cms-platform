@@ -10,8 +10,11 @@ import ProgramForm from '../../components/programs/ProgramForm';
 import ProgramDetails from '../../components/programs/ProgramDetails';
 import { topicsApi } from '../../api/topics.api';
 import Input from '../../components/ui/Input';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Programs() {
+  const { hasRole } = useAuth();
+  const canEdit = hasRole(['admin', 'editor']);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -124,7 +127,9 @@ export default function Programs() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Programs</h1>
-        <Button onClick={() => setIsModalOpen(true)}>+ Add Program</Button>
+        {canEdit && (
+          <Button onClick={() => setIsModalOpen(true)}>+ Add Program</Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -189,7 +194,9 @@ export default function Programs() {
         <Card>
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">No programs found</p>
-            <Button onClick={() => setIsModalOpen(true)}>Create Your First Program</Button>
+            {canEdit && (
+              <Button onClick={() => setIsModalOpen(true)}>Create Your First Program</Button>
+            )}
           </div>
         </Card>
       ) : (
@@ -248,7 +255,7 @@ export default function Programs() {
                           }}
                           className="text-xs px-2 py-1"
                         >
-                          Manage
+                          {canEdit ? 'Manage' : 'View'}
                         </Button>
                       </div>
                     </td>

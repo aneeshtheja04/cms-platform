@@ -12,7 +12,9 @@ export default function Card({ children, className = '', title, actions }) {
   );
 }
 
-export function StatCard({ label, value, icon, color = 'blue' }) {
+import { Link } from 'react-router-dom';
+
+export function StatCard({ label, value, icon, color = 'blue', to }) {
   const colors = {
     blue: 'bg-blue-50 text-blue-600',
     green: 'bg-teal-50 text-teal-600',
@@ -20,8 +22,8 @@ export function StatCard({ label, value, icon, color = 'blue' }) {
     orange: 'bg-orange-50 text-orange-600',
   };
 
-  return (
-    <Card className="group">
+  const cardContent = (
+    <Card className={`group ${to ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-500">{label}</p>
@@ -42,4 +44,10 @@ export function StatCard({ label, value, icon, color = 'blue' }) {
       </div>
     </Card>
   );
+
+  if (to) {
+    return <Link to={to}>{cardContent}</Link>;
+  }
+
+  return cardContent;
 }
