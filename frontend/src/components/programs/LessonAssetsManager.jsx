@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { assetsApi } from '../../api/assets.api';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
+import { useAuth } from '../../context/AuthContext';
 
 export default function LessonAssetsManager({ lesson, onUpdate }) {
+    const { hasRole } = useAuth();
+    const canEdit = hasRole(['admin', 'editor']);
     const [assets, setAssets] = useState(lesson.assets || []);
     const [loading, setLoading] = useState(false);
     const [newAssetUrl, setNewAssetUrl] = useState('');
@@ -97,19 +100,21 @@ export default function LessonAssetsManager({ lesson, onUpdate }) {
                                                 alt={`${variant} thumbnail`}
                                                 className="w-full h-full object-cover"
                                             />
-                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                                <Button
-                                                    variant="secondary"
-                                                    onClick={() => handleDeleteAsset(asset.id)}
-                                                    className="bg-white text-red-600 hover:text-red-700 text-xs px-2 py-1"
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </div>
+                                            {canEdit && (
+                                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={() => handleDeleteAsset(asset.id)}
+                                                        className="bg-white text-red-600 hover:text-red-700 text-xs px-2 py-1"
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center hover:border-blue-300 transition-colors">
-                                            {addingTo?.language === lang && addingTo?.variant === variant ? (
+                                            {canEdit && addingTo?.language === lang && addingTo?.variant === variant ? (
                                                 <div className="space-y-2">
                                                     <Input
                                                         placeholder="Image URL"
@@ -140,13 +145,15 @@ export default function LessonAssetsManager({ lesson, onUpdate }) {
                                             ) : (
                                                 <div className="py-2">
                                                     <p className="text-xs text-gray-500 mb-2">No image</p>
-                                                    <Button
-                                                        variant="outline"
-                                                        onClick={() => setAddingTo({ language: lang, variant })}
-                                                        className="text-xs w-full"
-                                                    >
-                                                        + Add
-                                                    </Button>
+                                                    {canEdit && (
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() => setAddingTo({ language: lang, variant })}
+                                                            className="text-xs w-full"
+                                                        >
+                                                            + Add
+                                                        </Button>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

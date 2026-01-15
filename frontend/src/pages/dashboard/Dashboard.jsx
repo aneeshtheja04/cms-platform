@@ -6,10 +6,11 @@ import { statsApi } from '../../api/stats.api';
 import { BookOpen, Layers, Users } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const isAdmin = hasRole('admin');
 
   useEffect(() => {
     fetchStats();
@@ -19,7 +20,7 @@ export default function Dashboard() {
     try {
       setLoading(true);
       setError('');
-      const data = await statsApi.getStats();
+      const data = await statsApi.getStats(isAdmin);
       setStats({
         programs: data.programsCount,
         lessons: data.lessonsCount,
@@ -71,6 +72,7 @@ export default function Dashboard() {
               value={stats.programs}
               color="green"
               icon={<Layers className="w-6 h-6" />}
+              to="/programs"
             />
 
             <StatCard
@@ -80,12 +82,15 @@ export default function Dashboard() {
               icon={<BookOpen className="w-6 h-6" />}
             />
 
-            <StatCard
-              label="Users"
-              value={stats.users}
-              color="orange"
-              icon={<Users className="w-6 h-6" />}
-            />
+            {isAdmin && (
+              <StatCard
+                label="Users"
+                value={stats.users}
+                color="orange"
+                icon={<Users className="w-6 h-6" />}
+                to="/users"
+              />
+            )}
           </>
         )}
       </div>

@@ -5,8 +5,11 @@ import Card from '../../components/ui/Card';
 import Loader from '../../components/ui/Loader';
 import Modal from '../../components/ui/Modal';
 import TopicForm from '../../components/topics/TopicForm';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Topics() {
+    const { hasRole } = useAuth();
+    const canEdit = hasRole(['admin', 'editor']);
     const [topics, setTopics] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -79,7 +82,9 @@ export default function Topics() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-900">Topics</h1>
-                <Button onClick={handleCreate}>+ Add Topic</Button>
+                {canEdit && (
+                    <Button onClick={handleCreate}>+ Add Topic</Button>
+                )}
             </div>
 
             <Card>
@@ -105,18 +110,22 @@ export default function Topics() {
                                             {new Date(topic.created_at).toLocaleDateString()}
                                         </td>
                                         <td className="py-3 px-4 text-right space-x-2">
-                                            <button
-                                                onClick={() => handleEdit(topic)}
-                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(topic.id)}
-                                                className="text-red-600 hover:text-red-800 text-sm font-medium"
-                                            >
-                                                Delete
-                                            </button>
+                                            {canEdit && (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleEdit(topic)}
+                                                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                    >
+                                                        Rename
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(topic.id)}
+                                                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
